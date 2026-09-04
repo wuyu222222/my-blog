@@ -1,0 +1,45 @@
+<div class="timeline-container">
+  <% var last; %>
+  <% page.posts.each(function(post, i){ %>
+    <% var year = post.date.year(); %>
+    <% if (last != year){ %>
+      <% last = year; %>
+      <div class="timeline-year-item">
+        <div class="timeline-year-header">
+          <span class="timeline-year-dot"></span>
+          <a href="<%- url_for(config.archive_dir + '/' + year) %>" class="timeline-year-title"><%= year %></a>
+          <span class="timeline-year-count"><%= site.posts.filter(p => p.date.year() === year).length %> 篇文章</span>
+        </div>
+      </div>
+    <% } %>
+    
+    <div class="timeline-post-item">
+      <div class="timeline-post-dot"></div>
+      <div class="timeline-post-info">
+        <time class="timeline-post-date"><%= date(post.date, 'MM-DD') %></time>
+        <a href="<%- url_for(post.path) %>" class="timeline-post-title">
+          <% if (post.sticky > 0) { %>
+            <span class="sticky-tag">置顶</span>
+          <% } %>
+          <%= post.title %>
+        </a>
+        <div class="timeline-post-tags">
+          <% if (post.tags && post.tags.length) { %>
+            <% post.tags.forEach(function(tag){ %>
+              <span class="tag-item">#<%= tag.name %></span>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<% if (page.total > 1){ %>
+  <nav id="page-nav">
+    <%- paginator({
+      prev_text: "&laquo; Prev",
+      next_text: "Next &raquo;"
+    }) %>
+  </nav>
+<% } %>

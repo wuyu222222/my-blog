@@ -1,0 +1,32 @@
+<section class="archives-wrap">
+  <div class="archives">
+    <% page.posts.each(function(post){ %>
+      <article class="archive-article">
+        <div class="archive-article-inner">
+          <header class="archive-article-header">
+            <%- partial('post/date', {post: post, class_name: 'archive-article-date', date_format: null}) %>
+            <h1 itemprop="name">
+              <a class="archive-article-title" href="<%- url_for(post.path) %>"><%= post.title %></a>
+            </h1>
+          </header>
+          <div class="archive-article-excerpt">
+            <% if (post.excerpt) { %>
+              <%- post.excerpt %>
+            <% } else { %>
+              <%- truncate(strip_html(post.content), {length: 200}) %>
+            <% } %>
+          </div>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<% if (page.total > 1){ %>
+  <nav id="page-nav">
+    <%- paginator({
+      prev_text: "&laquo; Prev",
+      next_text: "Next &raquo;"
+    }) %>
+  </nav>
+<% } %>

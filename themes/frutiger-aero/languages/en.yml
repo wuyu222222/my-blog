@@ -1,0 +1,34 @@
+menu:
+  Home: Home
+  Archives: Archives
+  Anime: Anime
+  Projects: Projects
+  About: About
+
+projects:
+  title: My Projects
+  subtitle: Some open source projects and works
+  loading: Loading project info...
+  error_fetch: Failed to load project data, check network or config
+  stars: Stars
+  forks: Forks
+  updated: Updated
+
+anime:
+  title: My Anime List
+  subtitle: My journey in the 2D world
+  stat_total: Total
+  stat_watching: Watching
+  stat_completed: Completed
+  stat_avg_score: Avg Score
+  list_title: Anime List
+  loading: Syncing Bangumi data...
+  error_id: Please set Bangumi User ID in theme config
+  error_fetch: Failed to load Bangumi data. Check ID or network (CORS).
+  status_1: Wish
+  status_2: Collected
+  status_3: Do
+  status_other: On Hold
+
+prev: Prev
+next: Next

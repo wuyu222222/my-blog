@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title><% if (page.title) { %><%= page.title %> | <% } %><%= config.title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <% if (theme.favicon){ %>
+    <link rel="icon" href="<%- url_for(theme.favicon) %>">
+  <% } %>
+  <%- css(url_for('css/style.css')) %>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bubble bubble-1"></div>
+  <div class="bubble bubble-2"></div>
+  <div class="bubble bubble-3"></div>
+  
+  
+  <div id="container">
+    <header id="header">
+      <div class="header-inner">
+        <h1 id="logo-wrap">
+          <a href="<%- url_for('/') %>" id="logo"><%= config.title %></a>
+        </h1>
+        <nav id="main-nav">
+          <% for (var i in theme.menu){ %>
+            <a class="main-nav-link" href="<%- url_for(theme.menu[i]) %>"><%= __('menu.' + i) %></a>
+          <% } %>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div class="main-wrapper">
+        <div class="content-wrapper">
+          <%- body %>
+        </div>
+        <aside id="sidebar">
+          <div class="sidebar-card">
+            <div class="user-profile">
+              <div class="user-avatar-frame">
+                <div class="user-avatar">
+                  <% if (theme.sidebar && theme.sidebar.avatar) { %>
+                    <img src="<%- url_for(theme.sidebar.avatar) %>" alt="<%= (theme.sidebar && theme.sidebar.username) || config.author %>">
+                  <% } else { %>
+                    <div class="avatar-placeholder"><%= ((theme.sidebar && theme.sidebar.username) || config.author).charAt(0).toUpperCase() %></div>
+                  <% } %>
+                </div>
+              </div>
+              <h3 class="user-name"><%= (theme.sidebar && theme.sidebar.username) || config.author %></h3>
+              <% if (theme.sidebar && theme.sidebar.description) { %>
+                <p class="user-bio"><%= theme.sidebar.description %></p>
+              <% } %>
+              <% if (theme.social) { %>
+                <div class="user-social">
+                  <% if (theme.social.github) { %>
+                    <a href="https://github.com/<%= theme.social.github %>" target="_blank" class="social-link" title="GitHub">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    </a>
+                  <% } %>
+                  <% if (theme.social.twitter) { %>
+                    <a href="https://twitter.com/<%= theme.social.twitter %>" target="_blank" class="social-link" title="Twitter">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                    </a>
+                  <% } %>
+                  <% if (theme.social.youtube) { %>
+                    <a href="https://www.youtube.com/@<%= theme.social.youtube %>" target="_blank" class="social-link" title="YouTube">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    </a>
+                  <% } %>
+                  <% if (theme.social.telegram) { %>
+                    <a href="https://t.me/<%= theme.social.telegram %>" target="_blank" class="social-link" title="Telegram">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    </a>
+                  <% } %>
+                  <% if (theme.social.email) { %>
+                    <a href="mailto:<%= theme.social.email %>" target="_blank" class="social-link" title="Email">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </a>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+          
+          <% if (theme.sidebar && theme.sidebar.photo_frame) { %>
+            <div class="sidebar-card photo-frame-card">
+              <div class="photo-frame">
+                <div class="photo-inner">
+                  <img src="<%- url_for(theme.sidebar.photo_frame) %>" alt="Photo">
+                </div>
+              </div>
+            </div>
+          <% } %>
+          
+          <div class="sidebar-card stats-card">
+            <h4 class="sidebar-title">站点统计</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-number"><%= site.posts.length %></span>
+                <span class="stat-label">文章</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number"><%= site.categories.length %></span>
+                <span class="stat-label">分类</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number"><%= site.tags.length %></span>
+                <span class="stat-label">标签</span>
+              </div>
+            </div>
+          </div>
+          
+          <% if (site.tags.length) { %>
+            <div class="sidebar-card tags-card">
+              <h4 class="sidebar-title">热门标签</h4>
+              <div class="tags-cloud">
+                <% site.tags.forEach(function(tag){ %>
+                  <a href="<%- url_for(tag.path) %>" class="tag-cloud-item"><%= tag.name %></a>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+        </aside>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="footer-inner">
+        &copy; <%= date(new Date(), 'YYYY') %> <%= config.author || config.title %><br>
+        Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Frutiger Aero Theme
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple Music Player
+    const audioPlayer = document.getElementById('audioPlayer');
+    const cdSpinner = document.getElementById('cdSpinner');
+
+    function updateCdState() {
+      if (audioPlayer.paused) {
+        cdSpinner.classList.remove('playing');
+      } else {
+        cdSpinner.classList.add('playing');
+      }
+    }
+
+    // Toggle play/pause
+    function togglePlay() {
+      if (audioPlayer.paused) {
+        audioPlayer.play().then(updateCdState).catch(() => {
+          // ignore autoplay policy errors
+        });
+      } else {
+        audioPlayer.pause();
+        updateCdState();
+      }
+    }
+
+    audioPlayer.addEventListener('play', updateCdState);
+    audioPlayer.addEventListener('pause', updateCdState);
+
+    window.addEventListener('load', () => {
+      audioPlayer.play().catch(() => {
+        // 浏览器可能因自动播放策略阻止，仍会在用户首次交互后可播放
+      });
+    });
+  </script>
+</body>
+</html>

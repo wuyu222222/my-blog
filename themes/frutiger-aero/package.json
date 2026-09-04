@@ -1,0 +1,20 @@
+{
+  "name": "hexo-theme-frutiger-aero",
+  "version": "1.0.0",
+  "description": "A nostalgic Frutiger Aero style theme for Hexo with glassmorphism and glossy effects.",
+  "main": "layout/layout.ejs",
+  "repository": "https://github.com/yourusername/hexo-theme-frutiger-aero",
+  "keywords": [
+    "hexo",
+    "theme",
+    "frutiger aero",
+    "glassmorphism",
+    "nostalgia"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "hexo": {
+    "theme": "frutiger-aero",
+    "version": "8.1.2"
+  }
+}

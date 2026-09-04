@@ -1,0 +1,237 @@
+<div class="projects-container">
+  <header class="projects-header">
+    <h1><%= __('projects.title') %></h1>
+    <p><%= __('projects.subtitle') %></p>
+  </header>
+
+  <div class="projects-list" id="projects-list">
+    <div class="loading-status"><%= __('projects.loading') %></div>
+  </div>
+</div>
+
+<script>
+  const MANUAL_PROJECTS = <%- JSON.stringify(theme.projects || []) %>;
+  const GITHUB_USERNAME = '<%= theme.github ? theme.github.username : '' %>';
+  const GITHUB_REPOS = <%- JSON.stringify(theme.github ? theme.github.repos || [] : []) %>;
+  const TRANSLATIONS = {
+    error_fetch: '<%= __('projects.error_fetch') %>',
+    stars: '<%= __('projects.stars') %>',
+    forks: '<%= __('projects.forks') %>',
+    updated: '<%= __('projects.updated') %>'
+  };
+
+  // 如果有手动配置的项目，直接使用
+  if (MANUAL_PROJECTS && MANUAL_PROJECTS.length > 0) {
+    renderManualProjects(MANUAL_PROJECTS);
+  } else if (GITHUB_USERNAME && GITHUB_USERNAME !== 'your_github_username' && GITHUB_USERNAME !== '') {
+    fetchGitHubData(GITHUB_USERNAME, GITHUB_REPOS);
+  } else {
+    document.getElementById('projects-list').innerHTML = `<div class="error-status">Please configure projects in theme config</div>`;
+  }
+
+  async function fetchGitHubData(username, customRepos) {
+    try {
+      console.log('Fetching GitHub data for:', username);
+      console.log('Custom repos:', customRepos);
+      
+      let repos = [];
+      let errorMsg = '';
+      
+      if (customRepos && customRepos.length > 0) {
+        const repoPromises = customRepos.map(repo => 
+          fetch(`https://api.github.com/repos/${username}/${repo}`, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+          }).then(res => {
+            console.log(`Response for ${repo}:`, res.status);
+            if (!res.ok) {
+              console.error(`Failed to fetch ${repo}:`, res.status);
+              return null;
+            }
+            return res.json();
+          })
+        );
+        repos = (await Promise.all(repoPromises)).filter(repo => repo !== null);
+        console.log('Fetched repos:', repos);
+      } else {
+        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=30`, {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        console.log('User repos response:', response.status);
+        
+        if (!response.ok) {
+          errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+          throw new Error(errorMsg);
+        }
+        
+        repos = await response.json();
+        console.log('User repos:', repos);
+      }
+      
+      if (repos && repos.length > 0) {
+        const filteredRepos = repos.filter(repo => repo && !repo.fork);
+        console.log('Filtered repos:', filteredRepos);
+        renderProjects(filteredRepos);
+      } else {
+        document.getElementById('projects-list').innerHTML = `<div class="error-status">No projects found. Check console for details.</div>`;
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      document.getElementById('projects-list').innerHTML = `<div class="error-status">Error: ${error.message || TRANSLATIONS.error_fetch}</div>`;
+    }
+  }
+
+  function renderProjects(repos) {
+    const list = document.getElementById('projects-list');
+    list.innerHTML = '';
+    
+    repos.forEach(repo => {
+      // 检查必要属性是否存在
+      if (!repo || !repo.name || !repo.html_url) {
+        return;
+      }
+      
+      const card = document.createElement('a');
+      card.href = repo.html_url;
+      card.target = '_blank';
+      card.className = 'project-card';
+      
+      const updatedDate = repo.updated_at ? new Date(repo.updated_at) : new Date();
+      const formattedDate = updatedDate.toLocaleDateString();
+      
+      const languageColors = {
+        JavaScript: '#f1e05a',
+        TypeScript: '#2b7489',
+        Python: '#3572A5',
+        Java: '#b07219',
+        'C++': '#f34b7d',
+        C: '#555555',
+        Go: '#00ADD8',
+        Rust: '#dea584',
+        Ruby: '#701516',
+        PHP: '#4F5D95',
+        Swift: '#ffac45',
+        Kotlin: '#F18E33',
+        HTML: '#e34c26',
+        CSS: '#563d7c',
+        Vue: '#41b883',
+        React: '#61dafb'
+      };
+      
+      const langColor = languageColors[repo.language] || '#8b949e';
+      
+      card.innerHTML = `
+        <div class="project-icon">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0012.5-7.59C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title">${repo.name}</h3>
+          <p class="project-desc">${repo.description || 'No description available'}</p>
+          <div class="project-meta">
+            ${repo.language ? `
+              <span class="project-meta-item">
+                <span class="lang-dot" style="background-color: ${langColor}"></span>
+                ${repo.language}
+              </span>
+            ` : ''}
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+              </svg>
+              ${repo.stargazers_count || 0}
+            </span>
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-.878a2.25 2.25 0 111.5 0v.878a2.25 2.25 0 01-2.25 2.25h-1.5v2.128a2.251 2.251 0 11-1.5 0V8.5h-1.5A2.25 2.25 0 013.5 6.25v-.878a2.25 2.25 0 111.5 0zM5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6.75 2.378a.75.75 0 111.5 0 .75.75 0 01-1.5 0zm-3 7.872a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"></path>
+              </svg>
+              ${repo.forks_count || 0}
+            </span>
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0012.5-7.59C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"></path>
+              </svg>
+              ${TRANSLATIONS.updated} ${formattedDate}
+            </span>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function renderManualProjects(projects) {
+    const list = document.getElementById('projects-list');
+    list.innerHTML = '';
+    
+    projects.forEach(project => {
+      const card = document.createElement('a');
+      card.href = project.url || '#';
+      card.target = '_blank';
+      card.className = 'project-card';
+      
+      const updatedDate = project.updated ? new Date(project.updated) : new Date();
+      const formattedDate = updatedDate.toLocaleDateString();
+      
+      const languageColors = {
+        JavaScript: '#f1e05a',
+        TypeScript: '#2b7489',
+        Python: '#3572A5',
+        Java: '#b07219',
+        'C++': '#f34b7d',
+        C: '#555555',
+        Go: '#00ADD8',
+        Rust: '#dea584',
+        Ruby: '#701516',
+        PHP: '#4F5D95',
+        Swift: '#ffac45',
+        Kotlin: '#F18E33',
+        HTML: '#e34c26',
+        CSS: '#563d7c',
+        Vue: '#41b883',
+        React: '#61dafb'
+      };
+      
+      const langColor = languageColors[project.language] || '#8b949e';
+      
+      card.innerHTML = `
+        <div class="project-icon">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0012.5-7.59C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title">${project.name}</h3>
+          <p class="project-desc">${project.description || 'No description available'}</p>
+          <div class="project-meta">
+            ${project.language ? `
+              <span class="project-meta-item">
+                <span class="lang-dot" style="background-color: ${langColor}"></span>
+                ${project.language}
+              </span>
+            ` : ''}
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+              </svg>
+              ${project.stars || 0}
+            </span>
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-.878a2.25 2.25 0 111.5 0v.878a2.25 2.25 0 01-2.25 2.25h-1.5v2.128a2.251 2.251 0 11-1.5 0V8.5h-1.5A2.25 2.25 0 013.5 6.25v-.878a2.25 2.25 0 111.5 0zM5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6.75 2.378a.75.75 0 111.5 0 .75.75 0 01-1.5 0zm-3 7.872a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"></path>
+              </svg>
+              ${project.forks || 0}
+            </span>
+            <span class="project-meta-item">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0012.5-7.59C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"></path>
+              </svg>
+              ${TRANSLATIONS.updated} ${formattedDate}
+            </span>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+</script>

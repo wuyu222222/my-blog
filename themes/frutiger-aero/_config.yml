@@ -1,0 +1,52 @@
+# Menu
+menu:
+  Home: /
+  Archives: /archives
+  Projects: /projects
+  About: /about
+
+# Sidebar Config
+sidebar:
+  enabled: true
+  username: Wu_yu  # 显示的用户名
+  avatar: /img/1.jpg  # 用户头像路径
+  description: Enjoy 2000s  # 用户简介
+  photo_frame: /img/jero.jpg  # 相框图片路径
+
+# Social Links
+social:
+  github: wuyu222222   # GitHub 用户名
+  email: 2298507314@qq.com  # Email 地址（可选）
+
+# Bangumi Config
+bangumi:
+  enabled: false
+  user_id: 1164833
+
+# Projects Config
+# 方式1: 从 GitHub API 自动获取（可能遇到速率限制）
+# github:
+#   username: tud8951
+#   repos: []
+
+# 方式2: 手动配置项目（推荐，不依赖 API）
+projects:
+  - name: 
+    description: 
+    url: 
+    language: 
+    stars: 
+    forks: 
+    updated: 
+
+# Content
+excerpt_link: Read More
+fancybox: true
+
+# Miscellaneous
+google_analytics:
+favicon: /img/favicon.png
+twitter:
+google_plus:
+fb_admins:
+fb_app_id:

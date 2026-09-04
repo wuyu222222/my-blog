@@ -1,0 +1,149 @@
+<div class="anime-container">
+  <header class="anime-header">
+    <h1><%= __('anime.title') %></h1>
+    <p><%= __('anime.subtitle') %></p>
+  </header>
+
+  <div class="anime-stats" id="anime-stats">
+    <div class="stat-card stat-total">
+      <div class="stat-icon">📚</div>
+      <div class="stat-info">
+        <span class="stat-value" id="stat-total">-</span>
+        <span class="stat-label"><%= __('anime.stat_total') %></span>
+      </div>
+    </div>
+    <div class="stat-card stat-watching">
+      <div class="stat-icon">▶️</div>
+      <div class="stat-info">
+        <span class="stat-value" id="stat-watching">-</span>
+        <span class="stat-label"><%= __('anime.stat_watching') %></span>
+      </div>
+    </div>
+    <div class="stat-card stat-completed">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <span class="stat-value" id="stat-completed">-</span>
+        <span class="stat-label"><%= __('anime.stat_completed') %></span>
+      </div>
+    </div>
+    <div class="stat-card stat-score">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-info">
+        <span class="stat-value" id="stat-score">-</span>
+        <span class="stat-label"><%= __('anime.stat_avg_score') %></span>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="list-title"><%= __('anime.list_title') %></h2>
+  <div class="anime-list" id="anime-list">
+    <div class="loading-status"><%= __('anime.loading') %></div>
+  </div>
+</div>
+
+<script>
+  const BANGUMI_USER_ID = '<%= theme.bangumi.user_id %>';
+  const TRANSLATIONS = {
+    error_id: '<%= __('anime.error_id') %>',
+    error_fetch: '<%= __('anime.error_fetch') %>',
+    status_1: '<%= __('anime.status_1') %>',
+    status_2: '<%= __('anime.status_2') %>',
+    status_3: '<%= __('anime.status_3') %>',
+    status_other: '<%= __('anime.status_other') %>'
+  };
+
+  if (!BANGUMI_USER_ID) {
+    document.getElementById('anime-list').innerHTML = `<div class="error-status">${TRANSLATIONS.error_id}</div>`;
+  } else {
+    fetchBangumiData(BANGUMI_USER_ID);
+  }
+
+  async function fetchBangumiData(userId) {
+    try {
+      let allData = [];
+      let offset = 0;
+      const limit = 50;
+      
+      while (true) {
+        const response = await fetch(`https://api.bgm.tv/v0/users/${userId}/collections?subject_type=2&limit=${limit}&offset=${offset}`, {
+          headers: {
+            'User-Agent': 'Hexo-Theme-Frutiger-Aero/1.0.0 (https://github.com/yourusername/hexo-theme-frutiger-aero)'
+          }
+        });
+        const data = await response.json();
+        
+        if (!data || !data.data || data.data.length === 0) {
+          break;
+        }
+        
+        allData = allData.concat(data.data);
+        
+        if (data.data.length < limit) {
+          break;
+        }
+        
+        offset += limit;
+      }
+      
+      if (allData.length > 0) {
+        const sortedData = allData.sort((a, b) => b.type - a.type);
+        renderAnime(sortedData);
+        updateStats(sortedData);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      document.getElementById('anime-list').innerHTML = `<div class="error-status">${TRANSLATIONS.error_fetch}</div>`;
+    }
+  }
+
+  function renderAnime(collections) {
+    const list = document.getElementById('anime-list');
+    list.innerHTML = '';
+    
+    collections.forEach(item => {
+      const subject = item.subject;
+      const card = document.createElement('a');
+      card.href = `https://bgm.tv/subject/${subject.id}`;
+      card.target = '_blank';
+      card.className = 'anime-card';
+      
+      const statusText = TRANSLATIONS[`status_${item.type}`] || TRANSLATIONS.status_other;
+      const statusClass = `status-${item.type}`;
+      
+      card.innerHTML = `
+        <div class="anime-cover-wrap">
+          <img src="${subject.images.large}" alt="${subject.name_cn || subject.name}" class="anime-cover">
+          <div class="anime-status-tag ${statusClass}">${statusText}</div>
+          <div class="anime-score-tag">★ ${item.rate || '0'}</div>
+          <div class="anime-progress-overlay">
+            ${item.ep_status || 0} / ${subject.eps || '?'} (${Math.round((item.ep_status / (subject.eps || 1)) * 100)}%)
+          </div>
+        </div>
+        <div class="anime-info">
+          <h3 class="anime-title" title="${subject.name_cn || subject.name}">${subject.name_cn || subject.name}</h3>
+          <p class="anime-desc">${subject.short_summary || ''}</p>
+          ${subject.tags && subject.tags.length > 0 ? `
+            <div class="anime-tags">
+              ${subject.tags.slice(0, 3).map(tag => `<span class="anime-tag">${tag.name}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function updateStats(collections) {
+    const all = collections.length;
+    const watching = collections.filter(i => i.type === 3).length;
+    const completed = collections.filter(i => i.type === 2).length;
+    
+    document.getElementById('stat-watching').innerText = watching;
+    document.getElementById('stat-completed').innerText = completed;
+    document.getElementById('stat-total').innerText = all;
+    
+    const rated = collections.filter(i => i.rate > 0);
+    const avg = rated.length > 0 ? (rated.reduce((acc, cur) => acc + cur.rate, 0) / rated.length).toFixed(1) : '0.0';
+    document.getElementById('stat-score').innerText = avg;
+  }
+</script>

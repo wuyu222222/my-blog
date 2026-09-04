@@ -1,0 +1,43 @@
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><%= page.title %></h1>
+    <div class="post-meta">
+      <%- partial('post/date', {post: page, date_format: null}) %>
+    </div>
+  </header>
+  <div class="post-content">
+    <%- page.content %>
+  </div>
+  
+  <footer class="post-footer">
+    <% if (page.tags && page.tags.length){ %>
+      <div class="post-tags">
+        <% page.tags.forEach(function(tag){ %>
+          <a href="<%- url_for(tag.path) %>" class="post-tag">#<%= tag.name %></a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <nav class="post-nav">
+      <% if (page.prev){ %>
+        <a href="<%- url_for(page.prev.path) %>" class="post-nav-link prev">
+          <span class="nav-arrow">&laquo;</span>
+          <div class="nav-info">
+            <span class="nav-label">上一篇</span>
+            <span class="nav-title"><%= page.prev.title %></span>
+          </div>
+        </a>
+      <% } %>
+      
+      <% if (page.next){ %>
+        <a href="<%- url_for(page.next.path) %>" class="post-nav-link next">
+          <div class="nav-info">
+            <span class="nav-label">下一篇</span>
+            <span class="nav-title"><%= page.next.title %></span>
+          </div>
+          <span class="nav-arrow">&raquo;</span>
+        </a>
+      <% } %>
+    </nav>
+  </footer>
+</article>
