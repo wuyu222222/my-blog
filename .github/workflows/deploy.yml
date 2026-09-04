@@ -21,7 +21,7 @@ jobs:
         run: npm install
 
       - name: 生成静态文件
-        run: npm run build  # 如果 hexo generate 不生效，可改为 npx hexo generate
+        run: npx hexo generate --config _config.yml,_config.github.yml  # 如果 hexo generate 不生效，可改为 npx hexo generate
 
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
