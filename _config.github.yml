@@ -1,0 +1,6 @@
+# GitHub Pages 部署专用配置
+# 此文件会与 _config.yml 合并，后面的配置会覆盖前面的
+
+# URL
+url: https://wuyu222222.github.io/my-blog/
+root: /my-blog/

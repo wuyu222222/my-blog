@@ -7,7 +7,7 @@
   <% if (theme.favicon){ %>
     <link rel="icon" href="<%- url_for(theme.favicon) %>">
   <% } %>
-  <%- css(url_for('css/style.css')) %>
+  <%- css('css/style.css') %>
   <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -131,39 +131,6 @@
     </footer>
   </div>
 
-  <script>
-    // Simple Music Player
-    const audioPlayer = document.getElementById('audioPlayer');
-    const cdSpinner = document.getElementById('cdSpinner');
 
-    function updateCdState() {
-      if (audioPlayer.paused) {
-        cdSpinner.classList.remove('playing');
-      } else {
-        cdSpinner.classList.add('playing');
-      }
-    }
-
-    // Toggle play/pause
-    function togglePlay() {
-      if (audioPlayer.paused) {
-        audioPlayer.play().then(updateCdState).catch(() => {
-          // ignore autoplay policy errors
-        });
-      } else {
-        audioPlayer.pause();
-        updateCdState();
-      }
-    }
-
-    audioPlayer.addEventListener('play', updateCdState);
-    audioPlayer.addEventListener('pause', updateCdState);
-
-    window.addEventListener('load', () => {
-      audioPlayer.play().catch(() => {
-        // 浏览器可能因自动播放策略阻止，仍会在用户首次交互后可播放
-      });
-    });
-  </script>
 </body>
 </html>
