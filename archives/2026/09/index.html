@@ -5,10 +5,10 @@
   <title>NoRain_Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-    <link rel="icon" href="/img/favicon.png">
+    <link rel="icon" href="/my-blog/img/favicon.png">
   
   
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/my-blog/css/style.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 <meta name="generator" content="Hexo 8.1.2"></head>
@@ -22,17 +22,17 @@
     <header id="header">
       <div class="header-inner">
         <h1 id="logo-wrap">
-          <a href="/" id="logo">NoRain_Blog</a>
+          <a href="/my-blog/" id="logo">NoRain_Blog</a>
         </h1>
         <nav id="main-nav">
           
-            <a class="main-nav-link" href="/">首页</a>
+            <a class="main-nav-link" href="/my-blog/">首页</a>
           
-            <a class="main-nav-link" href="/archives">归档</a>
+            <a class="main-nav-link" href="/my-blog/archives">归档</a>
           
-            <a class="main-nav-link" href="/projects">项目</a>
+            <a class="main-nav-link" href="/my-blog/projects">项目</a>
           
-            <a class="main-nav-link" href="/about">关于</a>
+            <a class="main-nav-link" href="/my-blog/about">关于</a>
           
         </nav>
       </div>
@@ -49,7 +49,7 @@
       <div class="timeline-year-item">
         <div class="timeline-year-header">
           <span class="timeline-year-dot"></span>
-          <a href="/archives/2026" class="timeline-year-title">2026</a>
+          <a href="/my-blog/archives/2026" class="timeline-year-title">2026</a>
           <span class="timeline-year-count">1 篇文章</span>
         </div>
       </div>
@@ -58,8 +58,8 @@
     <div class="timeline-post-item">
       <div class="timeline-post-dot"></div>
       <div class="timeline-post-info">
-        <time class="timeline-post-date">09-04</time>
-        <a href="/2026/09/04/hello-world/" class="timeline-post-title">
+        <time class="timeline-post-date">09-05</time>
+        <a href="/my-blog/2026/09/05/hello-world/" class="timeline-post-title">
           
           Hello World
         </a>
@@ -80,7 +80,7 @@
               <div class="user-avatar-frame">
                 <div class="user-avatar">
                   
-                    <img src="/img/1.jpg" alt="Wu_yu">
+                    <img src="/my-blog/img/1.jpg" alt="Wu_yu">
                   
                 </div>
               </div>
@@ -112,7 +112,7 @@
             <div class="sidebar-card photo-frame-card">
               <div class="photo-frame">
                 <div class="photo-inner">
-                  <img src="/img/jero.jpg" alt="Photo">
+                  <img src="/my-blog/img/jero.jpg" alt="Photo">
                 </div>
               </div>
             </div>
@@ -148,39 +148,6 @@
     </footer>
   </div>
 
-  <script>
-    // Simple Music Player
-    const audioPlayer = document.getElementById('audioPlayer');
-    const cdSpinner = document.getElementById('cdSpinner');
 
-    function updateCdState() {
-      if (audioPlayer.paused) {
-        cdSpinner.classList.remove('playing');
-      } else {
-        cdSpinner.classList.add('playing');
-      }
-    }
-
-    // Toggle play/pause
-    function togglePlay() {
-      if (audioPlayer.paused) {
-        audioPlayer.play().then(updateCdState).catch(() => {
-          // ignore autoplay policy errors
-        });
-      } else {
-        audioPlayer.pause();
-        updateCdState();
-      }
-    }
-
-    audioPlayer.addEventListener('play', updateCdState);
-    audioPlayer.addEventListener('pause', updateCdState);
-
-    window.addEventListener('load', () => {
-      audioPlayer.play().catch(() => {
-        // 浏览器可能因自动播放策略阻止，仍会在用户首次交互后可播放
-      });
-    });
-  </script>
 </body>
 </html>
